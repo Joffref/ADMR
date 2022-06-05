@@ -1,10 +1,10 @@
-variable "ssh_username" {
+variable "ssh_user" {
   type      = string
   default   = "packer"
   sensitive = true
 }
 
-variable "ssh_password" {
+variable "ssh_pass" {
   type      = string
   default   = "packer"
   sensitive = true
@@ -20,8 +20,48 @@ variable "cpus" {
   default = "2"
 }
 
+variable "domain" {
+  type    = string
+  default = "local"
+}
+
+variable "hostname" {
+  type    = string
+  default = "LDAP"
+}
+
 
 source "virtualbox-iso" "ldap" {
+  boot_command = [
+    "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+    "/install/vmlinuz<wait>",
+    " initrd=/install/initrd.gz<wait>",
+    " auto<wait>",
+    " console-setup/ask_detect=false<wait>",
+    " console-setup/layoutcode=us<wait>",
+    " console-setup/modelcode=pc105<wait>",
+    " debconf/frontend=noninteractive<wait>",
+    " debian-installer=fr_FR<wait>",
+    " fb=false<wait>",
+    " kbd-chooser/method=fr<wait>",
+    " keyboard-configuration/layout=FR<wait>",
+    " keyboard-configuration/variant=FR<wait>",
+    " locale=fr_FR<wait>",
+    " netcfg/get_domain={{user `domain`}}<wait>",
+    " netcfg/get_hostname={{user `hostname`}}<wait>",
+    " grub-installer/bootdev=/dev/sda<wait>",
+    " noapic<wait>",
+    " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg",
+    " -- <wait>",
+    " <enter><wait>"
+  ]
+  format = "ova"
+  guest_additions_mode = "upload"
+  headless = false
+  http_directory = "http"
   guest_os_type    = "Ubuntu_64"
   vm_name          = "ldap"
   iso_url          = "http://releases.ubuntu.com/18.04/ubuntu-18.04.6-live-server-amd64.iso"
