@@ -21,7 +21,7 @@ variable "cpus" {
 }
 
 
-source "virtualbox-iso" "dhcp" {
+source "virtualbox-iso" "supervision" {
   guest_os_type    = "Ubuntu_64"
   vm_name          = "ldap"
   iso_url          = "http://releases.ubuntu.com/18.04/ubuntu-18.04.6-live-server-amd64.iso"
@@ -36,7 +36,7 @@ source "virtualbox-iso" "dhcp" {
 }
 
 build {
-  sources = ["sources.virtualbox-iso.dhcp"]
+  sources = ["sources.virtualbox-iso.supervision"]
   provisioner "shell" {
     script = "scripts/install.sh"
   }
