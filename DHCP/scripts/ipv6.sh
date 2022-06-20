@@ -1,0 +1,1 @@
+sudo ip addr add 2001:dead:cafe:1:30::1/80 dev enp0s3

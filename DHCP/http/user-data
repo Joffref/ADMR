@@ -1,0 +1,75 @@
+#cloud-config
+package_upgrade: true
+autoinstall:
+  version: 1
+  locale: fr_FR
+  keyboard:
+    layout: fr
+    variant: fr
+  network:
+    version: 2
+    ethernets:
+      id0:
+        match:
+          name: enp*
+        dhcp4: true
+        dhcp-identifier: mac
+      id1:
+        match:
+          name: eth*
+        dhcp4: true
+        dhcp-identifier: mac    
+  storage:
+    layout:
+      name: direct
+    config:
+      - type: disk
+        id: disk0
+        match:
+          size: largest
+      - type: partition
+        id: boot-partition
+        device: disk0
+        size: 500M
+      - type: partition
+        id: root-partition
+        device: disk0
+        size: -1
+  ssh:
+    install-server: true
+    authorized-keys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDFEgotiQLtCt21NSiDZ91HqiavZ7ftkgT3J0x46oS6NuVA+QO9Tm7KdFB7fK4/UWmYKatlCVzNdiOKgpzqSi3gveNaYzguL2ac3T+wc4K7vCHZ3JYG0FxU3ZdFcAmLTOxsqy5PWYYk/vmJOPg8DmPsfD0aBM0i+LxKs3p/T1z1poOnDKZekOMp6ZXFrMklKCJGnMrkMtS/QXWd6o+VwFdZxJp14eng+rWmSNS3b4KQt+I/sFTe1Dz9Bt83Fb1e1K5a/SJe///JqavwWATEd5F1Q+gFyq5ec1Qk98Z362FykmyoUi0k1straf5F0CwXT2gr+fQhz136PwWCODJqSzqCTnP2h1wI4nYd/XqXo3RZvScYZWxGEu+yY5dAz3/WcAGkj9NcBATYKuyA5jtMhFa8VWhChXE8liDxQfJuZOSoeSUwGHeHJdgxegU6L6mlisHHauPMBTKWEUmK092tKmlatpn+TLMXsvNW+Ty+Sdwb0wQhYWNdcMRPBZyBXw50Lmc= sugate@black-hawk.home"
+    allow-pw: true
+  user-data:
+    disable_root: true
+    hostname: dhcp
+    username: admin
+    password: $6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0
+    preserve_hostname: false
+    timezone: Europe/Paris
+    users:
+      - name: admin
+        passwd: $6$exDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCof0kxKwuX1kqLG/ygbJ1f8wxED22bTL4F46P0
+        groups: [adm, cdrom, dip, lxd, plugdev, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+  refresh-installer:
+    update: true
+  apt:
+    preserve_sources_list: false
+    primary:
+      - arches: [i386, amd64]
+        uri: "http://archive.ubuntu.com/ubuntu"
+      - arches: [default]
+        uri: "http://ports.ubuntu.com/ubuntu-ports"
+    geoip: true
+  early-commands:
+    - sudo systemctl stop ssh
+  runcmd:
+    - /usr/bin/timedatectl set-timezone "Europe/Paris"
+    - /usr/bin/timedatectl set-local-rtc false
+    - /usr/sbin/locale-gen fr_FR.UTF-8
+    - /usr/bin/localectl set-locale fr_FR.UTF-8
+    - /usr/sbin/useradd -m -U -d /home/admin -c "admin" -G adm,cdrom,dip,lxd,plugdev,sudo -s /bin/bash admin
+    - '\echo "admin:admin" | /usr/sbin/chpasswd admin'

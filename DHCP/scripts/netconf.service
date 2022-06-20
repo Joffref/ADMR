@@ -1,0 +1,9 @@
+[Unit]
+Description=Creation of vlan and conf on network
+After=network.target
+
+[Service]
+ExecStart=/home/admin/startup.sh
+
+[Install]
+WantedBy=multi-user.target

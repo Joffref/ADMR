@@ -1,0 +1,1 @@
+sudo ip addr add 192.168.30.5/24 dev enp0s3
